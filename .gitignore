@@ -2,3 +2,5 @@ node_modules/
 playwright-profile/
 recordings/
 transcripts/
+bot-profile/
+user_data/
