@@ -4,3 +4,6 @@ recordings/
 transcripts/
 bot-profile/
 user_data/
+venv/
+.env
+__pycache__/
