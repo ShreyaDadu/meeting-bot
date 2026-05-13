@@ -1,136 +1,122 @@
-# Meeting Bot
+# AI Meeting Bot
 
-An automated meeting bot built with Node.js and Python that can join meetings, record audio, and generate transcriptions.
+Automated Google Meet bot with:
 
-## Features
-
-* Automated meeting joining
-* Audio recording support
-* Meeting transcription using Python scripts
-* Playwright browser automation
-* Organized recordings and transcript storage
-* Easy setup and execution
+- Meeting automation
+- Audio recording
+- Whisper transcription
+- AI summaries
+- Playwright browser automation
 
 ---
 
-# Project Structure
+# Features
 
-```bash
-meeting-bot/
-│
-├── bot.js
-├── package.json
-├── package-lock.json
-├── .gitignore
-│
-├── scripts/
-│   └── transcribe.py
-│
-├── recordings/
-├── transcripts/
-├── playwright-profile/
-├── bot-profile/
-├── user_data/
-└── node_modules/
-```
+## Completed (Phase 1)
 
----
+### Automation
+- Open Google Meet automatically
+- Join meetings via link
+- Persistent Chrome login
 
-# Prerequisites
+### Audio
+- Record meeting audio using FFmpeg
+- Stereo Mix system audio capture
+- WAV recording support
 
-Make sure the following are installed:
+### AI Pipeline
+- Faster-Whisper transcription
+- Automatic transcript saving
+- Meeting summaries
 
-* Node.js
-* Python 3
-* npm
-* pip
+### Infrastructure
+- Node.js backend
+- Python transcription pipeline
+- GitHub integration
 
 ---
 
-# Installation
+# Tech Stack
 
-## 1. Clone the repository
+- Node.js
+- Playwright
+- FFmpeg
+- Faster-Whisper
+- Python
+- Google Meet Automation
+
+---
+
+# Setup
+
+## Clone repo
 
 ```bash
 git clone https://github.com/ShreyaDadu/meeting-bot.git
 cd meeting-bot
 ```
 
-## 2. Install Node.js dependencies
+## Install Node dependencies
 
 ```bash
 npm install
 ```
 
-## 3. Create and activate Python virtual environment
-
-### Windows
+## Install Python dependencies
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### Mac/Linux
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## 4. Install Python dependencies
-
-```bash
-pip install -r requirements.txt
+pip install faster-whisper
 ```
 
 ---
 
-# Running the Bot
-
-Start the bot using:
+# Run Bot
 
 ```bash
-node bot.js
+node bot.js GOOGLE_MEET_LINK
+```
+
+Example:
+
+```bash
+node bot.js https://meet.google.com/abc-defg-hij
 ```
 
 ---
 
-# Transcription
+# Folder Structure
 
-Run the transcription script:
-
-```bash
-python scripts/transcribe.py
+```text
+meeting-bot/
+│
+├── recordings/
+├── transcripts/
+├── scripts/
+├── bot.js
+├── package.json
+└── README.md
 ```
 
 ---
 
-# Output
+# Current Status
 
-* Recordings are stored in the `recordings/` folder
-* Generated transcripts are stored in the `transcripts/` folder
+## Phase 1 ✅
+- Recording
+- Transcription
+- Summaries
 
----
-
-# Notes
-
-* Large folders such as `node_modules/`, `venv/`, recordings, and browser profiles are ignored using `.gitignore`
-* Make sure required meeting credentials/configurations are properly set before running the bot
-
----
-
-# Tech Stack
-
-* Node.js
-* Playwright
-* Python
-* Faster-Whisper
+## Upcoming
+- Live transcription
+- Action items
+- Speaker detection
+- Dashboard UI
+- API backend
+- Docker deployment
+- Multi-user support
 
 ---
 
-# Repository
+# Author
 
-GitHub Repository:
-
-[https://github.com/ShreyaDadu/meeting-bot](https://github.com/ShreyaDadu/meeting-bot)
+Shreya
