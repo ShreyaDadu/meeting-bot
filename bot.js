@@ -29,17 +29,23 @@ const path = require('path');
   // OPEN GOOGLE MEET
   // =========================
 
-  await page.goto('https://meet.google.com', {
+  const meetingLink = process.argv[2];
+
+if (!meetingLink) {
+  console.log('Please provide Google Meet link');
+  process.exit(1);
+}
+
+await page.goto(meetingLink, {
     waitUntil: 'domcontentloaded',
     timeout: 0
   });
 
   console.log('Google Meet Opened');
 
-  console.log('Join meeting manually...');
-  console.log('Recording starts in 15 seconds');
+console.log('Recording starts in 15 seconds');
 
-  await new Promise(resolve => setTimeout(resolve, 15000));
+await page.waitForTimeout(15000);
 
   // =========================
   // START RECORDING
@@ -56,7 +62,7 @@ const path = require('path');
         '-rtbufsize',
         '100M',
         '-i',
-        'audio="CABLE Output (VB-Audio Virtual Cable)"',
+'audio="Stereo Mix (Realtek(R) Audio)"',
         '-ac',
         '2',
         '-ar',
@@ -84,20 +90,44 @@ const path = require('path');
 
   console.log('Starting transcription...');
 
-  const python = spawn(
-    'python',
-    ['scripts/transcribe.py'],
+const python = spawn(
+  'python',
+  ['scripts/transcribe.py'],
+  {
+    shell: true
+  }
+);
+
+python.stdout.on('data', data => {
+  console.log(data.toString());
+});
+
+python.stderr.on('data', data => {
+  console.log(data.toString());
+});
+
+python.on('close', () => {
+
+  console.log('Transcription finished');
+
+  console.log('Starting summary...');
+
+  const summary = spawn(
+    'node',
+    ['scripts/free-summary.js'],
     {
       shell: true
     }
   );
 
-  python.stdout.on('data', data => {
+  summary.stdout.on('data', data => {
     console.log(data.toString());
   });
 
-  python.stderr.on('data', data => {
+  summary.stderr.on('data', data => {
     console.log(data.toString());
   });
+
+});
 
 })();
