@@ -1,133 +1,220 @@
+
+const fs = require('fs');
+const path = require('path');
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
-const path = require('path');
 
 (async () => {
 
-  const recordingPath = path.join(__dirname, 'recordings', 'meeting.wav');
+  let recording = null;
+  let context = null;
 
-  // =========================
-  // OPEN CHROME
-  // =========================
+  try {
 
-  const context = await chromium.launchPersistentContext(
-    'D:/BOT/meeting-bot/playwright-profile',
-    {
-      headless: false,
-      channel: 'chrome',
+    const meetingId = Date.now().toString();
 
-      args: [
-        '--use-fake-ui-for-media-stream',
-        '--start-maximized'
-      ]
+    const meetingFolder = path.join(
+      __dirname,
+      'meetings',
+      meetingId
+    );
+
+    fs.mkdirSync(meetingFolder, { recursive: true });
+
+    const recordingPath = path.join(
+      meetingFolder,
+      'meeting.wav'
+    );
+
+    const meetingLink = process.argv[2];
+
+    if (!meetingLink) {
+
+      console.log('Meeting link missing');
+      process.exit(1);
+
     }
-  );
 
-  const page = await context.newPage();
+    console.log('Opening Chrome...');
 
-  // =========================
-  // OPEN GOOGLE MEET
-  // =========================
+    context = await chromium.launchPersistentContext(
+      'D:/BOT/meeting-bot/playwright-profile',
+      {
+        headless: false,
+        channel: 'chrome',
+        args: [
+          '--use-fake-ui-for-media-stream',
+          '--start-maximized'
+        ]
+      }
+    );
 
-  const meetingLink = process.argv[2];
+    const page = await context.newPage();
 
-if (!meetingLink) {
-  console.log('Please provide Google Meet link');
-  process.exit(1);
-}
+    await page.goto(meetingLink, {
+      waitUntil: 'domcontentloaded',
+      timeout: 0
+    });
 
-await page.goto(meetingLink, {
-    waitUntil: 'domcontentloaded',
-    timeout: 0
-  });
+    console.log('Google Meet Opened');
 
-  console.log('Google Meet Opened');
+    console.log('Waiting 20 seconds before recording...');
 
-console.log('Recording starts in 15 seconds');
+    await page.waitForTimeout(20000);
 
-await page.waitForTimeout(15000);
+    console.log('Starting recording...');
 
-  // =========================
-  // START RECORDING
-  // =========================
-
-  console.log('Starting recording...');
-
-  const ffmpeg = spawn(
-    'D:/BOT/ffmpeg-8.1.1-essentials_build/bin/ffmpeg.exe',
-    [
+    recording = spawn(
+      'D:/BOT/ffmpeg-8.1.1-essentials_build/bin/ffmpeg.exe',
+      [
         '-y',
         '-f',
         'dshow',
         '-rtbufsize',
         '100M',
         '-i',
-'audio="Stereo Mix (Realtek(R) Audio)"',
+        'audio=Stereo Mix (Realtek(R) Audio)',
         '-ac',
         '2',
         '-ar',
         '44100',
-        '-t',
-        '30',
         recordingPath
       ],
-    {
-      shell: true
-    }
-  );
+      {
+        stdio: ['pipe', 'pipe', 'pipe']
+      }
+    );
 
-  ffmpeg.stderr.on('data', data => {
-    console.log(data.toString());
-  });
+    recording.stderr.on('data', data => {
+      console.log(data.toString());
+    });
 
-  await new Promise(resolve => setTimeout(resolve, 35000));
+    console.log('Recording started');
 
-  console.log('Recording completed');
+    // =========================
+    // STOP HANDLER FROM BACKEND
+    // =========================
 
-  // =========================
-  // START TRANSCRIPTION
-  // =========================
+    process.stdin.resume();
 
-  console.log('Starting transcription...');
+    process.stdin.on('data', data => {
 
-const python = spawn(
-  'python',
-  ['scripts/transcribe.py'],
-  {
-    shell: true
+      const message = data.toString().trim();
+
+      console.log('Received:', message);
+
+      if (message === 'STOP') {
+
+        console.log('Stopping recording...');
+
+        if (recording) {
+
+          recording.stdin.write('q\n');
+
+        }
+
+      }
+
+    });
+
+    // =========================
+    // AFTER RECORDING CLOSES
+    // =========================
+
+    recording.on('close', () => {
+
+      console.log('Recording completed');
+
+      console.log('Starting transcription...');
+
+      const python = spawn(
+        'python',
+        [
+          'scripts/transcribe.py',
+          recordingPath,
+          meetingFolder
+        ],
+        {
+          shell: true
+        }
+      );
+
+      python.stdout.on('data', data => {
+        console.log(data.toString());
+      });
+
+      python.stderr.on('data', data => {
+        console.log(data.toString());
+      });
+
+      python.on('close', async (code) => {
+
+        console.log('Python process finished');
+
+        if (code !== 0) {
+
+          console.log('Transcription failed');
+
+          return;
+
+        }
+
+        const transcriptPath = path.join(
+          meetingFolder,
+          'transcript.txt'
+        );
+
+        if (!fs.existsSync(transcriptPath)) {
+
+          console.log('Transcript file missing');
+
+          return;
+
+        }
+
+        console.log('Transcription completed');
+
+        console.log('Generating summary...');
+
+        const summary = spawn(
+          'node',
+          [
+            'scripts/free-summary.js',
+            meetingFolder
+          ],
+          {
+            shell: true
+          }
+        );
+
+        summary.stdout.on('data', data => {
+          console.log(data.toString());
+        });
+
+        summary.stderr.on('data', data => {
+          console.log(data.toString());
+        });
+
+        summary.on('close', async () => {
+
+          console.log('Meeting processing completed');
+
+          await context.close();
+
+          process.exit(0);
+
+        });
+
+      });
+
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
   }
-);
-
-python.stdout.on('data', data => {
-  console.log(data.toString());
-});
-
-python.stderr.on('data', data => {
-  console.log(data.toString());
-});
-
-python.on('close', () => {
-
-  console.log('Transcription finished');
-
-  console.log('Starting summary...');
-
-  const summary = spawn(
-    'node',
-    ['scripts/free-summary.js'],
-    {
-      shell: true
-    }
-  );
-
-  summary.stdout.on('data', data => {
-    console.log(data.toString());
-  });
-
-  summary.stderr.on('data', data => {
-    console.log(data.toString());
-  });
-
-});
 
 })();
+
+

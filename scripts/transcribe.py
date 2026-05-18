@@ -1,26 +1,27 @@
-from faster_whisper import WhisperModel
+import whisper
 import sys
 import os
 
-# UTF-8 force
-sys.stdout.reconfigure(encoding='utf-8')
+audio_path = sys.argv[1]
+meeting_folder = sys.argv[2]
 
-model = WhisperModel("base", device="cpu", compute_type="int8")
+print("Loading Whisper model...")
 
-segments, info = model.transcribe("recordings/meeting.wav")
+model = whisper.load_model("base")
 
-print("\nTranscription:\n")
+print("Transcribing audio...")
 
-# create transcripts folder if not exists
-os.makedirs("transcripts", exist_ok=True)
+result = model.transcribe(audio_path)
 
-output_path = os.path.join("transcripts", "transcript.txt")
+transcript = result["text"]
 
-with open(output_path, "w", encoding="utf-8") as f:
+transcript_path = os.path.join(
+    meeting_folder,
+    "transcript.txt"
+)
 
-    for segment in segments:
-        print(segment.text)
+with open(transcript_path, "w", encoding="utf-8") as f:
+    f.write(transcript)
 
-        f.write(segment.text + "\n")
-
-print("\nTranscript saved successfully")
+print("Transcript saved successfully")
+print(transcript_path)
