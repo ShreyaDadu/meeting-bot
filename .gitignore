@@ -1,7 +1,14 @@
+
+node_modules/
+venv/
+.env
+
 meetings/
 recordings/
 transcripts/
-node_modules/
-venv/
+
 playwright-profile/
-.env
+
+*.wav
+*.txt
+

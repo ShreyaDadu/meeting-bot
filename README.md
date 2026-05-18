@@ -27,8 +27,10 @@ The bot can:
   * `meeting.wav`
   * `transcript.txt`
   * `summary.txt`
-
----
+* Automatic Google Meet joining
+* Auto-disable microphone and camera before joining
+* Backend-controlled meeting stop flow
+```
 
 # Tech Stack
 
@@ -198,6 +200,12 @@ summary.txt
 * Worker-based architecture
 * AI-generated action items
 * Meeting analytics dashboard
+* Automatic email delivery of transcripts and summaries
+* Live meeting status tracking
+* Multi-user meeting orchestration
+* Distributed worker infrastructure
+* Production deployment support
+
 
 ---
 
