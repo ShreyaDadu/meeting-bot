@@ -294,12 +294,36 @@ await page.waitForTimeout(20000);
 
         summary.on('close', async () => {
 
-          console.log('Meeting processing completed');
+console.log('Sending email...');
 
-          await context.close();
+const email = spawn(
+  'node',
+  [
+    'scripts/send-email.js',
+    meetingFolder
+  ],
+  {
+    shell: true
+  }
+);
 
-          process.exit(0);
+email.stdout.on('data', data => {
+  console.log(data.toString());
+});
 
+email.stderr.on('data', data => {
+  console.log(data.toString());
+});
+
+email.on('close', async () => {
+
+  console.log('Meeting processing completed');
+
+  await context.close();
+
+  process.exit(0);
+
+});
         });
 
       });
