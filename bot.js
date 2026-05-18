@@ -56,11 +56,108 @@ const { spawn } = require('child_process');
       timeout: 0
     });
 
-    console.log('Google Meet Opened');
 
-    console.log('Waiting 20 seconds before recording...');
+console.log('Google Meet Opened');
 
-    await page.waitForTimeout(20000);
+// =========================
+// FOCUS PAGE
+// =========================
+
+await page.bringToFront();
+
+await page.mouse.click(500, 500);
+
+await page.waitForTimeout(2000);
+// =========================
+// TURN OFF MIC
+// =========================
+
+try {
+
+  const micButton = page.locator(
+    '[aria-label*="microphone"]'
+  ).first();
+
+  await micButton.waitFor({
+    timeout: 10000
+  });
+
+  await micButton.click();
+
+  console.log('Mic turned OFF');
+
+} catch (error) {
+
+  console.log('Could not turn off mic');
+
+}
+
+// =========================
+// TURN OFF CAMERA
+// =========================
+
+try {
+
+  const cameraButton = page.locator(
+    '[aria-label*="camera"]'
+  ).first();
+
+  await cameraButton.waitFor({
+    timeout: 10000
+  });
+
+  await cameraButton.click();
+
+  console.log('Camera turned OFF');
+
+} catch (error) {
+
+  console.log('Could not turn off camera');
+
+}
+
+// =========================
+// WAIT
+// =========================
+
+await page.waitForTimeout(3000);
+
+// =========================
+// CLICK JOIN BUTTON
+// =========================
+
+try {
+
+  const buttons = await page.locator('button').all();
+
+  for (const button of buttons) {
+
+    const text = await button.innerText();
+
+    if (
+      text.includes('Ask to join') ||
+      text.includes('Join now')
+    ) {
+
+      console.log('Joining meeting...');
+
+      await button.click();
+
+      break;
+
+    }
+
+  }
+
+} catch (error) {
+
+  console.log('Could not click join button');
+
+}
+
+console.log('Waiting 20 seconds before recording...');
+
+await page.waitForTimeout(20000);
 
     console.log('Starting recording...');
 
@@ -216,5 +313,3 @@ const { spawn } = require('child_process');
   }
 
 })();
-
-
