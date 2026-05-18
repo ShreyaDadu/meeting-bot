@@ -1,9 +1,7 @@
-node_modules/
-playwright-profile/
+meetings/
 recordings/
 transcripts/
-bot-profile/
-user_data/
+node_modules/
 venv/
+playwright-profile/
 .env
-__pycache__/
