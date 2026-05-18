@@ -1,97 +1,71 @@
 # AI Meeting Bot
 
-Automated Google Meet bot with:
+An AI-powered Google Meet bot built using Playwright, Node.js, React, FFmpeg, and OpenAI Whisper.
 
-- Meeting automation
-- Audio recording
-- Whisper transcription
-- AI summaries
-- Playwright browser automation
+The bot can:
+
+* Join Google Meet meetings
+* Record meeting audio
+* Generate meeting transcripts
+* Create automatic summaries
+* Control the bot from a React frontend
 
 ---
 
 # Features
 
-## Completed (Phase 1)
+* Google Meet automation using Playwright
+* Chrome persistent login support
+* Audio recording using FFmpeg
+* Whisper-based local transcription
+* Automatic summary generation
+* React frontend controls
+* Express backend API
+* Separate meeting session folders
+* Auto-generated:
 
-### Automation
-- Open Google Meet automatically
-- Join meetings via link
-- Persistent Chrome login
-
-### Audio
-- Record meeting audio using FFmpeg
-- Stereo Mix system audio capture
-- WAV recording support
-
-### AI Pipeline
-- Faster-Whisper transcription
-- Automatic transcript saving
-- Meeting summaries
-
-### Infrastructure
-- Node.js backend
-- Python transcription pipeline
-- GitHub integration
+  * `meeting.wav`
+  * `transcript.txt`
+  * `summary.txt`
 
 ---
 
 # Tech Stack
 
-- Node.js
-- Playwright
-- FFmpeg
-- Faster-Whisper
-- Python
-- Google Meet Automation
+## Frontend
+
+* React
+* Axios
+
+## Backend
+
+* Node.js
+* Express
+
+## Automation
+
+* Playwright
+* Google Chrome
+
+## Audio Processing
+
+* FFmpeg
+
+## AI / Transcription
+
+* OpenAI Whisper (local)
 
 ---
 
-# Setup
-
-## Clone repo
+# Project Structure
 
 ```bash
-git clone https://github.com/ShreyaDadu/meeting-bot.git
-cd meeting-bot
-```
-
-## Install Node dependencies
-
-```bash
-npm install
-```
-
-## Install Python dependencies
-
-```bash
-pip install faster-whisper
-```
-
----
-
-# Run Bot
-
-```bash
-node bot.js GOOGLE_MEET_LINK
-```
-
-Example:
-
-```bash
-node bot.js https://meet.google.com/abc-defg-hij
-```
-
----
-
-# Folder Structure
-
-```text
 meeting-bot/
 │
-├── recordings/
-├── transcripts/
+├── backend/
+├── frontend/
 ├── scripts/
+├── meetings/
 ├── bot.js
 ├── package.json
 └── README.md
@@ -99,24 +73,134 @@ meeting-bot/
 
 ---
 
-# Current Status
+# Installation
 
-## Phase 1 ✅
-- Recording
-- Transcription
-- Summaries
+## Clone Repository
 
-## Upcoming
-- Live transcription
-- Action items
-- Speaker detection
-- Dashboard UI
-- API backend
-- Docker deployment
-- Multi-user support
+```bash
+git clone https://github.com/ShreyaDadu/meeting-bot.git
+cd meeting-bot
+```
+
+---
+
+# Install Dependencies
+
+## Root
+
+```bash
+npm install
+```
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+## Backend
+
+```bash
+cd backend
+npm install
+```
+
+---
+
+# Install Python Dependencies
+
+```bash
+pip install openai-whisper
+pip install torch
+```
+
+---
+
+# Install FFmpeg
+
+Download FFmpeg and ensure:
+
+```bash
+ffmpeg -version
+```
+
+works in terminal.
+
+---
+
+# Run Backend
+
+```bash
+cd backend
+node server.js
+```
+
+---
+
+# Run Frontend
+
+```bash
+cd frontend
+npm start
+```
+
+---
+
+# Usage
+
+1. Open:
+
+```bash
+http://localhost:3000
+```
+
+2. Paste Google Meet link
+
+3. Click:
+
+```bash
+Start Meeting Bot
+```
+
+4. After meeting ends:
+
+```bash
+Stop Meeting Bot
+```
+
+---
+
+# Output
+
+Each meeting creates a separate folder:
+
+```bash
+meetings/<meeting-id>/
+```
+
+Containing:
+
+```bash
+meeting.wav
+transcript.txt
+summary.txt
+```
+
+---
+
+# Future Improvements
+
+* Real-time streaming transcription
+* Speaker diarization
+* Cloud deployment
+* Multi-meeting scalability
+* Worker-based architecture
+* AI-generated action items
+* Meeting analytics dashboard
 
 ---
 
 # Author
 
-Shreya
+Shreya Dadu
