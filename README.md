@@ -4,11 +4,13 @@ An AI-powered Google Meet bot built using Playwright, Node.js, React, FFmpeg, an
 
 The bot can:
 
-* Join Google Meet meetings
+* Join Google Meet meetings automatically
+* Disable microphone and camera before joining
 * Record meeting audio
-* Generate meeting transcripts
-* Create automatic summaries
-* Control the bot from a React frontend
+* Generate meeting transcripts locally using Whisper
+* Generate AI-powered summaries
+* Send meeting reports directly to user email
+* Control meetings from a React frontend dashboard
 
 ---
 
@@ -16,21 +18,24 @@ The bot can:
 
 * Google Meet automation using Playwright
 * Chrome persistent login support
+* Automatic Google Meet joining
+* Auto-disable microphone and camera before joining
 * Audio recording using FFmpeg
 * Whisper-based local transcription
-* Automatic summary generation
+* AI-generated meeting summaries
+* Automatic email delivery of transcript + summary
 * React frontend controls
 * Express backend API
 * Separate meeting session folders
-* Auto-generated:
-
-  * `meeting.wav`
-  * `transcript.txt`
-  * `summary.txt`
-* Automatic Google Meet joining
-* Auto-disable microphone and camera before joining
 * Backend-controlled meeting stop flow
-```
+
+Automatically generated files:
+
+* `meeting.wav`
+* `transcript.txt`
+* `summary.txt`
+
+---
 
 # Tech Stack
 
@@ -56,6 +61,10 @@ The bot can:
 ## AI / Transcription
 
 * OpenAI Whisper (local)
+
+## Email Service
+
+* Nodemailer
 
 ---
 
@@ -131,6 +140,17 @@ works in terminal.
 
 ---
 
+# Environment Variables
+
+Create a `.env` file:
+
+```env
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+```
+
+---
+
 # Run Backend
 
 ```bash
@@ -157,7 +177,10 @@ npm start
 http://localhost:3000
 ```
 
-2. Paste Google Meet link
+2. Enter:
+
+   * Google Meet link
+   * User email
 
 3. Click:
 
@@ -189,6 +212,21 @@ transcript.txt
 summary.txt
 ```
 
+The final transcript and summary are automatically emailed to the user.
+
+---
+
+# Current Workflow
+
+1. User enters Google Meet link + email
+2. Bot joins meeting automatically
+3. Microphone and camera are disabled
+4. Meeting audio recording starts
+5. Recording stops from frontend
+6. Whisper generates transcript
+7. AI summary gets generated
+8. Transcript + summary email sent to user
+
 ---
 
 # Future Improvements
@@ -200,12 +238,10 @@ summary.txt
 * Worker-based architecture
 * AI-generated action items
 * Meeting analytics dashboard
-* Automatic email delivery of transcripts and summaries
 * Live meeting status tracking
 * Multi-user meeting orchestration
 * Distributed worker infrastructure
 * Production deployment support
-
 
 ---
 

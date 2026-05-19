@@ -8,6 +8,8 @@ recordings/
 transcripts/
 
 playwright-profile/
+bot-profile/ 
+user_data/
 
 *.wav
 *.txt
