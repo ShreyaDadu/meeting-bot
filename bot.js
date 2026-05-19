@@ -28,6 +28,9 @@ const { spawn } = require('child_process');
 
     const meetingLink = process.argv[2];
 
+const userEmail = process.argv[3];
+
+
     if (!meetingLink) {
 
       console.log('Meeting link missing');
@@ -300,7 +303,8 @@ const email = spawn(
   'node',
   [
     'scripts/send-email.js',
-    meetingFolder
+    meetingFolder,
+    userEmail
   ],
   {
     shell: true

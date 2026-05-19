@@ -6,15 +6,20 @@ function App() {
 
   const [meetingLink, setMeetingLink] = useState('');
 
+const [email, setEmail] = useState('');
+
   const startMeeting = async () => {
 
     try {
 
       const response = await axios.post(
         'http://localhost:5000/api/start-bot',
-        {
-          meetLink: meetingLink
-        }
+  
+{
+  meetingLink,
+  email
+}
+
       );
 
       alert(response.data.message);
@@ -74,7 +79,24 @@ function App() {
         }}
       />
 
+
       <br /><br />
+      
+<input
+  type="email"
+  placeholder="Enter Email"
+  value={email}
+  onChange={(e) =>
+    setEmail(e.target.value)
+  }
+  style={{
+    width: '400px',
+    padding: '10px'
+  }}
+/>
+
+<br /><br />
+
 
       <button
         onClick={startMeeting}

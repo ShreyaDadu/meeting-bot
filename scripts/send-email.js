@@ -7,6 +7,9 @@ const nodemailer = require('nodemailer');
 
 const meetingFolder = process.argv[2];
 
+const userEmail = process.argv[3];
+
+
 if (!meetingFolder) {
 
   console.log('Meeting folder missing');
@@ -47,8 +50,8 @@ async function sendEmail() {
     await transporter.sendMail({
 
       from: process.env.EMAIL_USER,
+to: userEmail,
 
-      to: process.env.EMAIL_USER,
 
       subject: 'AI Meeting Report',
 

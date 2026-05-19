@@ -5,10 +5,10 @@ let botProcess = null;
 const startMeetingBot = async (req, res) => {
 
   try {
+const { meetingLink, email } = req.body;
 
-    const { meetLink } = req.body;
 
-    if (!meetLink) {
+    if (!meetingLink) {
 
       return res.status(400).json({
         success: false,
@@ -28,7 +28,7 @@ const startMeetingBot = async (req, res) => {
 
     botProcess = spawn(
       'node',
-      ['bot.js', meetLink],
+      ['bot.js', meetingLink,email],
       {
         cwd: 'D:/BOT/meeting-bot',
         shell: true
