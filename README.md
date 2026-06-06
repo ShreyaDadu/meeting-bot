@@ -1,39 +1,66 @@
 # AI Meeting Bot
 
-An AI-powered Google Meet bot built using Playwright, Node.js, React, FFmpeg, and OpenAI Whisper.
+An AI-powered Google Meet assistant built using Playwright, Node.js, React, FFmpeg, SQLite, Nodemailer, and OpenAI Whisper.
 
-The bot can:
-
-* Join Google Meet meetings automatically
-* Disable microphone and camera before joining
-* Record meeting audio
-* Generate meeting transcripts locally using Whisper
-* Generate AI-powered summaries
-* Send meeting reports directly to user email
-* Control meetings from a React frontend dashboard
+The bot can automatically join Google Meet meetings, disable microphone and camera, record meeting audio, generate transcripts and summaries, store meeting history, and email reports directly to users.
 
 ---
 
 # Features
 
-* Google Meet automation using Playwright
+## Meeting Automation
+
+* Join Google Meet meetings automatically
 * Chrome persistent login support
-* Automatic Google Meet joining
-* Auto-disable microphone and camera before joining
-* Audio recording using FFmpeg
-* Whisper-based local transcription
-* AI-generated meeting summaries
-* Automatic email delivery of transcript + summary
-* React frontend controls
-* Express backend API
-* Separate meeting session folders
-* Backend-controlled meeting stop flow
+* Auto-disable microphone before joining
+* Auto-disable camera before joining
+* Auto-click Join Now
 
-Automatically generated files:
+## Audio Processing
 
-* `meeting.wav`
-* `transcript.txt`
-* `summary.txt`
+* Record meeting audio using FFmpeg
+* Separate recording folder for every meeting
+* WAV audio generation
+
+## AI Processing
+
+* Local transcription using OpenAI Whisper
+* Automatic transcript generation
+* Automatic summary generation
+
+## Email Delivery
+
+* Email transcript to user
+* Email summary to user
+* Automatic report delivery after meeting completion
+
+## Backend
+
+* Express REST API
+* SQLite database integration
+* Meeting status tracking
+* Meeting history storage
+* Multiple concurrent bot support
+
+## Frontend
+
+* React dashboard
+* Start Meeting Bot
+* Stop Meeting Bot
+* User email input
+* Google Meet link input
+
+---
+
+# Generated Files
+
+For every meeting:
+
+meeting.wav
+
+transcript.txt
+
+summary.txt
 
 ---
 
@@ -48,200 +75,95 @@ Automatically generated files:
 
 * Node.js
 * Express
+* SQLite3
 
 ## Automation
 
 * Playwright
 * Google Chrome
 
-## Audio Processing
+## Audio
 
 * FFmpeg
 
-## AI / Transcription
+## AI
 
-* OpenAI Whisper (local)
+* OpenAI Whisper
 
-## Email Service
+## Email
 
 * Nodemailer
 
 ---
 
-# Project Structure
-
-```bash
-meeting-bot/
-│
-├── backend/
-├── frontend/
-├── scripts/
-├── meetings/
-├── bot.js
-├── package.json
-└── README.md
-```
-
----
-
-# Installation
-
-## Clone Repository
-
-```bash
-git clone https://github.com/ShreyaDadu/meeting-bot.git
-cd meeting-bot
-```
-
----
-
-# Install Dependencies
-
-## Root
-
-```bash
-npm install
-```
-
-## Frontend
-
-```bash
-cd frontend
-npm install
-```
-
-## Backend
-
-```bash
-cd backend
-npm install
-```
-
----
-
-# Install Python Dependencies
-
-```bash
-pip install openai-whisper
-pip install torch
-```
-
----
-
-# Install FFmpeg
-
-Download FFmpeg and ensure:
-
-```bash
-ffmpeg -version
-```
-
-works in terminal.
-
----
-
-# Environment Variables
-
-Create a `.env` file:
-
-```env
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-```
-
----
-
-# Run Backend
-
-```bash
-cd backend
-node server.js
-```
-
----
-
-# Run Frontend
-
-```bash
-cd frontend
-npm start
-```
-
----
-
-# Usage
-
-1. Open:
-
-```bash
-http://localhost:3000
-```
-
-2. Enter:
-
-   * Google Meet link
-   * User email
-
-3. Click:
-
-```bash
-Start Meeting Bot
-```
-
-4. After meeting ends:
-
-```bash
-Stop Meeting Bot
-```
-
----
-
-# Output
-
-Each meeting creates a separate folder:
-
-```bash
-meetings/<meeting-id>/
-```
-
-Containing:
-
-```bash
-meeting.wav
-transcript.txt
-summary.txt
-```
-
-The final transcript and summary are automatically emailed to the user.
-
----
-
 # Current Workflow
 
-1. User enters Google Meet link + email
-2. Bot joins meeting automatically
-3. Microphone and camera are disabled
-4. Meeting audio recording starts
-5. Recording stops from frontend
-6. Whisper generates transcript
-7. AI summary gets generated
-8. Transcript + summary email sent to user
+1. User enters Google Meet link
+2. User enters email address
+3. Bot joins meeting automatically
+4. Microphone and camera are disabled
+5. Meeting audio recording starts
+6. User stops meeting from dashboard
+7. FFmpeg recording ends
+8. Whisper generates transcript
+9. Summary is generated
+10. Transcript and summary are emailed to user
+11. Meeting data is stored in SQLite database
 
 ---
 
-# Future Improvements
+# Current MVP Status
 
-* Real-time streaming transcription
+Implemented:
+
+* Google Meet automation
+* Audio recording
+* Local transcription
+* Summary generation
+* Email delivery
+* SQLite database
+* Meeting status tracking
+* Multiple bot instances
+* REST API
+
+In Progress:
+
+* Meeting History Dashboard
+* Transcript Viewer
+* Summary Viewer
+
+Planned:
+
+* Real-time transcription
 * Speaker diarization
+* Action item extraction
+* Meeting analytics
 * Cloud deployment
-* Multi-meeting scalability
 * Worker-based architecture
-* AI-generated action items
-* Meeting analytics dashboard
-* Live meeting status tracking
-* Multi-user meeting orchestration
-* Distributed worker infrastructure
-* Production deployment support
+* Multi-user orchestration
+* Distributed bot workers
+
+---
+
+# Project Structure
+
+meeting-bot/
+
+├── backend/
+
+├── frontend/
+
+├── scripts/
+
+├── meetings/
+
+├── bot.js
+
+├── meetings.db
+
+├── package.json
+
+└── README.md
 
 ---
 
