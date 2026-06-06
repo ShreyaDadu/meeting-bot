@@ -7,6 +7,7 @@ function App() {
   const [meetingLink, setMeetingLink] = useState('');
 
 const [email, setEmail] = useState('');
+const [botId, setBotId] = useState(null);
 
   const startMeeting = async () => {
 
@@ -21,8 +22,9 @@ const [email, setEmail] = useState('');
 }
 
       );
+setBotId(response.data.botId);
 
-      alert(response.data.message);
+alert(response.data.message);
 
     } catch (error) {
 
@@ -40,8 +42,11 @@ const [email, setEmail] = useState('');
     try {
 
       const response = await axios.post(
-        'http://localhost:5000/api/stop-bot'
-      );
+  'http://localhost:5000/api/stop-bot',
+  {
+    botId
+  }
+);
 
       alert(response.data.message);
 

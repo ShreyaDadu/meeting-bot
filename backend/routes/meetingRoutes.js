@@ -5,11 +5,13 @@ const router = express.Router();
 
 const {
   startMeetingBot,
-  stopMeetingBot
+  stopMeetingBot,
+  getMeetings
 } = require('../controllers/meetingController');
 
 router.post('/start-bot', startMeetingBot);
 
 router.post('/stop-bot', stopMeetingBot);
+router.get('/meetings', getMeetings);
 
 module.exports = router;

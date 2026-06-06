@@ -1,12 +1,14 @@
+
+const db = require('../database');
 const { spawn } = require('child_process');
 
-let botProcess = null;
+const activeBots = {};
 
 const startMeetingBot = async (req, res) => {
 
   try {
-const { meetingLink, email } = req.body;
 
+    const { meetingLink, email } = req.body;
 
     if (!meetingLink) {
 
@@ -17,23 +19,45 @@ const { meetingLink, email } = req.body;
 
     }
 
-    if (botProcess) {
+    const botId = Date.now().toString();
 
-      return res.status(400).json({
-        success: false,
-        message: 'Bot already running'
-      });
+db.run(
 
-    }
+  `
+    INSERT INTO meetings (
+      id,
+      email,
+      meetingLink,
+      status,
+      createdAt
+    )
+    VALUES (?, ?, ?, ?, ?)
+  `,
 
-    botProcess = spawn(
+  [
+    botId,
+    email,
+    meetingLink,
+    'running',
+    new Date().toISOString()
+  ]
+
+);
+
+    const botProcess = spawn(
       'node',
-      ['bot.js', meetingLink,email],
+      [
+        'bot.js',
+        meetingLink,
+        email
+      ],
       {
         cwd: 'D:/BOT/meeting-bot',
         shell: true
       }
     );
+
+    activeBots[botId] = botProcess;
 
     botProcess.stdout.on('data', data => {
       console.log(data.toString());
@@ -45,15 +69,31 @@ const { meetingLink, email } = req.body;
 
     botProcess.on('close', () => {
 
-      console.log('Bot process closed');
+      console.log(`Bot ${botId} closed`);
+    
+db.run(
 
-      botProcess = null;
+  `
+    UPDATE meetings
+    SET status = ?
+    WHERE id = ?
+  `,
+
+  [
+    'completed',
+    botId
+  ]
+
+);
+
+      delete activeBots[botId];
 
     });
 
     return res.json({
       success: true,
-      message: 'Bot started successfully'
+      message: 'Bot started successfully',
+      botId
     });
 
   } catch (error) {
@@ -73,18 +113,20 @@ const stopMeetingBot = async (req, res) => {
 
   try {
 
-    if (!botProcess) {
+    const { botId } = req.body;
+
+    if (!botId || !activeBots[botId]) {
 
       return res.status(400).json({
         success: false,
-        message: 'No active bot'
+        message: 'Bot not found'
       });
 
     }
 
-    console.log('Sending STOP signal...');
+    console.log(`Stopping bot ${botId}...`);
 
-    botProcess.stdin.write('STOP\n');
+    activeBots[botId].stdin.write('STOP\n');
 
     return res.json({
       success: true,
@@ -104,7 +146,36 @@ const stopMeetingBot = async (req, res) => {
 
 };
 
+const getMeetings = async (req, res) => {
+
+  db.all(
+    `
+    SELECT *
+    FROM meetings
+    ORDER BY createdAt DESC
+    `,
+    [],
+    (err, rows) => {
+
+      if (err) {
+
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to fetch meetings'
+        });
+
+      }
+
+      return res.json(rows);
+
+    }
+  );
+
+};
+
+
 module.exports = {
   startMeetingBot,
-  stopMeetingBot
+  stopMeetingBot,
+  getMeetings
 };

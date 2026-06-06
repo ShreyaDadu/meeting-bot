@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
-
+const db = require('./backend/database');
 (async () => {
 
   let recording = null;
@@ -190,6 +190,32 @@ await page.waitForTimeout(20000);
     });
 
     console.log('Recording started');
+const interval = setInterval(async () => {
+
+  try {
+
+    const text = await page.textContent('body');
+
+    if (
+      text.includes('You left the meeting') ||
+      text.includes('No one else is here')
+    ) {
+
+      console.log('Meeting ended');
+
+      recording.stdin.write('q\n');
+
+      clearInterval(interval);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+}, 10000);
 
     // =========================
     // STOP HANDLER FROM BACKEND
@@ -222,7 +248,7 @@ await page.waitForTimeout(20000);
     // =========================
 
     recording.on('close', () => {
-
+      clearInterval(interval);
       console.log('Recording completed');
 
       console.log('Starting transcription...');
@@ -296,6 +322,10 @@ await page.waitForTimeout(20000);
         });
 
         summary.on('close', async () => {
+          const summaryPath = path.join(
+            meetingFolder,
+            'summary.txt'
+          );
 
 console.log('Sending email...');
 
@@ -321,6 +351,43 @@ email.stderr.on('data', data => {
 
 email.on('close', async () => {
 
+  db.run(
+    `
+    INSERT INTO meetings (
+      id,
+      email,
+      meetingLink,
+      status,
+      transcriptPath,
+      summaryPath,
+      createdAt
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `,
+    [
+      meetingId,
+      process.argv[3] || '',
+      meetingLink,
+      'completed',
+      transcriptPath,
+      summaryPath,
+      new Date().toISOString()
+    ],
+    (err) => {
+  
+      if (err) {
+  
+        console.log('DB Error:', err);
+  
+      } else {
+  
+        console.log('Meeting saved to database');
+  
+      }
+  
+    }
+  );
+
   console.log('Meeting processing completed');
 
   await context.close();
@@ -341,3 +408,15 @@ email.on('close', async () => {
   }
 
 })();
+
+process.on('uncaughtException', async (err) => {
+
+  console.log('Unhandled Error:', err);
+
+  if (context) {
+    await context.close();
+  }
+
+  process.exit(1);
+
+});
