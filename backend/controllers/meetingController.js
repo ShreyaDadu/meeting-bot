@@ -1,6 +1,8 @@
 
 const db = require('../database');
 const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const activeBots = {};
 
@@ -173,9 +175,115 @@ const getMeetings = async (req, res) => {
 
 };
 
+const getTranscript = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const meetingsDir = path.join(
+      __dirname,
+      '..',
+      '..',
+      'meetings'
+    );
+    const folders = fs.readdirSync(meetingsDir);
+    
+    const latestFolder =
+  folders.sort().reverse()[0];
+
+const transcriptPath = path.join(
+  meetingsDir,
+  latestFolder,
+  'transcript.txt'
+);
+
+console.log('Meetings Dir:', meetingsDir);
+console.log('Folders:', folders);
+console.log('Latest Folder:', latestFolder);
+console.log('Transcript Path:', transcriptPath);
+
+    if (!fs.existsSync(transcriptPath)) {
+
+      return res.status(404).json({
+        success: false,
+        message: 'Transcript not found'
+      });
+
+    }
+
+    const transcript = fs.readFileSync(
+      transcriptPath,
+      'utf8'
+    );
+
+    return res.json({
+      transcript
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load transcript'
+    });
+
+  }
+
+};
+
+const getSummary = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const summaryPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'meetings',
+      id,
+      'summary.txt'
+    );
+
+    if (!fs.existsSync(summaryPath)) {
+
+      return res.status(404).json({
+        success: false,
+        message: 'Summary not found'
+      });
+
+    }
+
+    const summary = fs.readFileSync(
+      summaryPath,
+      'utf8'
+    );
+
+    return res.json({
+      summary
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load summary'
+    });
+
+  }
+
+};
 
 module.exports = {
   startMeetingBot,
   stopMeetingBot,
-  getMeetings
+  getMeetings,
+  getTranscript,
+  getSummary
 };

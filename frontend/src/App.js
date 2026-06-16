@@ -1,13 +1,37 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
 
   const [meetingLink, setMeetingLink] = useState('');
+  const [email, setEmail] = useState('');
+  const [botId, setBotId] = useState(null);
+  const [meetings, setMeetings] = useState([]);
+  const [transcript, setTranscript] = useState('');
+  const [summary, setSummary] = useState('');
+  const loadMeetings = async () => {
 
-const [email, setEmail] = useState('');
-const [botId, setBotId] = useState(null);
+    try {
+
+      const response = await axios.get(
+        'http://localhost:5000/api/meetings'
+      );
+
+      setMeetings(response.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    loadMeetings();
+
+  }, []);
 
   const startMeeting = async () => {
 
@@ -15,16 +39,17 @@ const [botId, setBotId] = useState(null);
 
       const response = await axios.post(
         'http://localhost:5000/api/start-bot',
-  
-{
-  meetingLink,
-  email
-}
-
+        {
+          meetingLink,
+          email
+        }
       );
-setBotId(response.data.botId);
 
-alert(response.data.message);
+      setBotId(response.data.botId);
+
+      alert(response.data.message);
+
+      loadMeetings();
 
     } catch (error) {
 
@@ -42,13 +67,19 @@ alert(response.data.message);
     try {
 
       const response = await axios.post(
-  'http://localhost:5000/api/stop-bot',
-  {
-    botId
-  }
-);
+        'http://localhost:5000/api/stop-bot',
+        {
+          botId
+        }
+      );
 
       alert(response.data.message);
+
+      setTimeout(() => {
+
+        loadMeetings();
+
+      }, 3000);
 
     } catch (error) {
 
@@ -59,6 +90,47 @@ alert(response.data.message);
 
     }
 
+  };
+
+  const viewTranscript = async (id) => {
+
+    try {
+  
+      const response = await axios.get(
+        `http://localhost:5000/api/meetings/${id}/transcript`
+      );
+  
+      console.log(response.data);
+      setTranscript(
+        response.data.transcript
+      );
+  
+    } catch (error) {
+  
+      alert('Transcript not found');
+  
+    }
+  
+  };
+
+  const viewSummary = async (id) => {
+
+    try {
+  
+      const response = await axios.get(
+        `http://localhost:5000/api/meetings/${id}/summary`
+      );
+      console.log('SUMMARY RESPONSE:', response.data);
+      setSummary(
+        response.data.summary
+      );
+  
+    } catch (error) {
+      console.log(error);
+      alert('Summary not found');
+  
+    }
+  
   };
 
   return (
@@ -84,24 +156,22 @@ alert(response.data.message);
         }}
       />
 
+      <br /><br />
+
+      <input
+        type="email"
+        placeholder="Enter Email"
+        value={email}
+        onChange={(e) =>
+          setEmail(e.target.value)
+        }
+        style={{
+          width: '400px',
+          padding: '10px'
+        }}
+      />
 
       <br /><br />
-      
-<input
-  type="email"
-  placeholder="Enter Email"
-  value={email}
-  onChange={(e) =>
-    setEmail(e.target.value)
-  }
-  style={{
-    width: '400px',
-    padding: '10px'
-  }}
-/>
-
-<br /><br />
-
 
       <button
         onClick={startMeeting}
@@ -121,6 +191,135 @@ alert(response.data.message);
       >
         Stop Meeting Bot
       </button>
+
+      <hr style={{ marginTop: '40px' }} />
+
+      <h2>Meeting History</h2>
+
+      {meetings.length === 0 && (
+        <p>No meetings found</p>
+      )}
+
+      {meetings.map((meeting) => (
+
+        <div
+          key={meeting.id}
+          style={{
+            border: '1px solid #ccc',
+            padding: '15px',
+            marginBottom: '15px'
+          }}
+        >
+
+          <p>
+            <strong>Email:</strong> {meeting.email}
+          </p>
+
+          <p>
+            <strong>Status:</strong> {meeting.status}
+          </p>
+
+          <p>
+            <strong>Created:</strong> {meeting.createdAt}
+          </p>
+
+          <p>
+            <strong>Meeting Link:</strong>
+            {' '}
+            {meeting.meetingLink}
+          </p>
+          <button
+  onClick={() =>
+    viewTranscript(meeting.id)
+  }
+>
+  View Transcript
+</button>
+<button
+  onClick={() =>
+    viewSummary(meeting.id)
+  }
+  style={{
+    marginLeft: '10px'
+  }}
+>
+  View Summary
+</button>
+<button
+  onClick={() =>
+    window.open(
+      `http://localhost:5000/api/meetings/${meeting.id}/download-transcript`
+    )
+  }
+  style={{
+    marginLeft: '10px'
+  }}
+>
+  Download Transcript
+</button>
+
+<button
+  onClick={() =>
+    window.open(
+      `http://localhost:5000/api/meetings/${meeting.id}/download-summary`
+    )
+  }
+  style={{
+    marginLeft: '10px'
+  }}
+>
+  Download Summary
+</button>
+        </div>
+
+      ))}
+
+{transcript && (
+
+<div
+  style={{
+    marginTop: '30px',
+    border: '1px solid black',
+    padding: '20px'
+  }}
+>
+
+  <h2>Transcript</h2>
+
+  <pre
+    style={{
+      whiteSpace: 'pre-wrap'
+    }}
+  >
+    {transcript}
+  </pre>
+
+</div>
+
+)}
+{summary && (
+
+<div
+  style={{
+    marginTop: '30px',
+    border: '1px solid green',
+    padding: '20px'
+  }}
+>
+
+  <h2>Summary</h2>
+
+  <pre
+    style={{
+      whiteSpace: 'pre-wrap'
+    }}
+  >
+    {summary}
+  </pre>
+
+</div>
+
+)}
 
     </div>
   );
