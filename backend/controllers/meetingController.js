@@ -3,6 +3,12 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const {
+  getFreeWorker,
+  occupyWorker,
+  releaseWorker
+} = require('../services/workerManager');
+
 const activeBots = {};
 
 const startMeetingBot = async (req, res) => {
@@ -21,6 +27,23 @@ const startMeetingBot = async (req, res) => {
     }
 
     const botId = Date.now().toString();
+    const meetingId = botId;
+    const worker = getFreeWorker();
+
+    if (!worker) {
+    
+      return res.status(503).json({
+        success: false,
+        message: 'No meeting workers available'
+      });
+    
+    }
+    const workerId = 'worker-2';
+    occupyWorker(worker.id);
+    
+    console.log(
+      `Assigned ${worker.id} to meeting ${meetingId}`
+    );
 
 db.run(
 
@@ -45,19 +68,38 @@ db.run(
 
 );
 
+/*const botProcess = spawn(
+  'node',
+  [
+    'bot.js',
+    meetingLink,
+    email,
+    meetingId,
+    worker.id
+  ],
+      {
+        cwd: 'D:/BOT/meeting-bot',
+        shell: true
+      }
+    );*/
+    
+    
+
     const botProcess = spawn(
       'node',
       [
         'bot.js',
         meetingLink,
-        email
+        email,
+        botId,
+        workerId   
       ],
       {
         cwd: 'D:/BOT/meeting-bot',
         shell: true
       }
     );
-
+    
     activeBots[botId] = botProcess;
 
     botProcess.stdout.on('data', data => {
@@ -86,7 +128,11 @@ db.run(
   ]
 
 );
+releaseWorker(workerId);
 
+console.log(
+  `${workerId} released`
+);
       delete activeBots[botId];
 
     });
@@ -180,27 +226,14 @@ const getTranscript = async (req, res) => {
 
     const { id } = req.params;
 
-    const meetingsDir = path.join(
+    const transcriptPath = path.join(
       __dirname,
       '..',
       '..',
-      'meetings'
+      'meetings',
+      id,
+      'transcript.txt'
     );
-    const folders = fs.readdirSync(meetingsDir);
-    
-    const latestFolder =
-  folders.sort().reverse()[0];
-
-const transcriptPath = path.join(
-  meetingsDir,
-  latestFolder,
-  'transcript.txt'
-);
-
-console.log('Meetings Dir:', meetingsDir);
-console.log('Folders:', folders);
-console.log('Latest Folder:', latestFolder);
-console.log('Transcript Path:', transcriptPath);
 
     if (!fs.existsSync(transcriptPath)) {
 

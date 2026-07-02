@@ -1,7 +1,6 @@
-console.log('__dirname =', __dirname);
-console.log('cwd =', process.cwd());
-
-require('dotenv').config();
+require('dotenv').config({
+  path: require('path').join(__dirname, '..', 'backend', '.env')
+});
 
 console.log('EMAIL_USER =', process.env.EMAIL_USER);
 console.log('EMAIL_PASS =', process.env.EMAIL_PASS ? 'FOUND' : 'MISSING');

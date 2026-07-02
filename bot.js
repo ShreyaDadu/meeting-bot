@@ -10,7 +10,7 @@ const db = require('./backend/database');
 
   try {
 
-    const meetingId = Date.now().toString();
+    const meetingId = process.argv[4];
 
     const meetingFolder = path.join(
       __dirname,
@@ -26,6 +26,9 @@ const db = require('./backend/database');
     );
 
     const meetingLink = process.argv[2];
+    const email = process.argv[3];
+
+    const workerId = process.argv[5] || 'worker-1';
 
 const userEmail = process.argv[3];
 
@@ -38,8 +41,9 @@ const userEmail = process.argv[3];
     }
 
     console.log('Opening Chrome...');
+   
 
-    context = await chromium.launchPersistentContext(
+   /* context = await chromium.launchPersistentContext(
       'D:/BOT/meeting-bot/playwright-profile',
       {
         headless: false,
@@ -49,15 +53,47 @@ const userEmail = process.argv[3];
           '--start-maximized'
         ]
       }
+    );*/
+
+    console.log('Worker:', workerId);
+
+/* const profilePath = path.join(
+  __dirname,
+  'worker-profiles',
+  workerId
+);
+
+console.log('Profile Path:', profilePath);
+    
+    fs.mkdirSync(profilePath, {
+      recursive: true
+    });*/
+    const profilePath =
+  'D:/BOT/meeting-bot/playwright-profile';
+
+console.log('Worker:', workerId);
+console.log('Profile:', profilePath);
+    
+    context = await chromium.launchPersistentContext(
+      profilePath,
+      {
+        headless: false,
+        channel: 'chrome',
+        args: [
+          '--use-fake-ui-for-media-stream',
+          '--start-maximized'
+        ]
+      }
     );
+const page = context.pages()[0] || await context.newPage();
 
-    const page = await context.newPage();
-
-    await page.goto(meetingLink, {
-      waitUntil: 'domcontentloaded',
-      timeout: 0
-    });
-
+await page.goto(
+  meetingLink,
+  {
+    waitUntil: 'domcontentloaded',
+    timeout: 0
+  }
+);
 
 console.log('Google Meet Opened');
 
@@ -352,25 +388,18 @@ email.on('close', async () => {
 
   db.run(
     `
-    INSERT INTO meetings (
-      id,
-      email,
-      meetingLink,
-      status,
-      transcriptPath,
-      summaryPath,
-      createdAt
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `,
+    UPDATE meetings
+    SET
+      status = ?,
+      transcriptPath = ?,
+      summaryPath = ?
+    WHERE id = ?
+    `,
     [
-      meetingId,
-      process.argv[3] || '',
-      meetingLink,
       'completed',
       transcriptPath,
       summaryPath,
-      new Date().toISOString()
+      meetingId
     ],
     (err) => {
   
@@ -380,7 +409,7 @@ email.on('close', async () => {
   
       } else {
   
-        console.log('Meeting saved to database');
+        console.log('Meeting updated successfully');
   
       }
   
