@@ -2,8 +2,7 @@
 
 An AI-powered Google Meet assistant built using Playwright, Node.js, React, FFmpeg, SQLite, Nodemailer, and OpenAI Whisper.
 
-The bot can automatically join Google Meet meetings, disable microphone and camera, record meeting audio, generate transcripts and summaries, store meeting history, and email reports directly to users.
-
+The bot can automatically join Google Meet meetings, record audio, generate AI-powered transcripts and summaries, email meeting reports, and is being extended with a worker-based architecture for scalable concurrent meeting automation.
 ---
 
 # Features
@@ -40,7 +39,8 @@ The bot can automatically join Google Meet meetings, disable microphone and came
 * SQLite database integration
 * Meeting status tracking
 * Meeting history storage
-* Multiple concurrent bot support
+* Worker Manager for scalable meeting execution
+* Worker allocation and release
 
 ## Frontend
 
@@ -95,20 +95,39 @@ summary.txt
 * Nodemailer
 
 ---
+# Scalability Architecture
+
+The project is evolving from a single meeting bot into a scalable worker-based architecture.
+
+Current implementation includes:
+
+* Worker Manager
+* Worker allocation
+* Worker release after meeting completion
+
+Upcoming scalability features:
+
+* Meeting Queue
+* Meeting Orchestrator
+* Multiple isolated browser workers
+* Distributed execution across machines
+* Horizontal scaling for concurrent meetings
 
 # Current Workflow
 
 1. User enters Google Meet link
 2. User enters email address
-3. Bot joins meeting automatically
-4. Microphone and camera are disabled
-5. Meeting audio recording starts
-6. User stops meeting from dashboard
-7. FFmpeg recording ends
-8. Whisper generates transcript
-9. Summary is generated
-10. Transcript and summary are emailed to user
-11. Meeting data is stored in SQLite database
+3. Worker Manager assigns an available worker
+4. Bot joins meeting automatically
+5. Microphone and camera are disabled
+6. Meeting audio recording starts
+7. User stops meeting from dashboard
+8. FFmpeg recording ends
+9. Whisper generates transcript
+10. Summary is generated
+11. Transcript and summary are emailed to user
+12. Meeting data is stored in SQLite database
+13. Worker is released for future meetings
 
 ---
 
@@ -119,12 +138,14 @@ Implemented:
 * Google Meet automation
 * Audio recording
 * Local transcription
-* Summary generation
+* AI summary generation
 * Email delivery
 * SQLite database
 * Meeting status tracking
-* Multiple bot instances
+* Transcript & Summary download
 * REST API
+* Worker Manager
+* Worker allocation & release
 
 In Progress:
 
@@ -134,14 +155,15 @@ In Progress:
 
 Planned:
 
+* Meeting Queue
+* Meeting Orchestrator
 * Real-time transcription
 * Speaker diarization
 * Action item extraction
 * Meeting analytics
-* Cloud deployment
-* Worker-based architecture
-* Multi-user orchestration
 * Distributed bot workers
+* Cloud deployment
+* Horizontal scaling
 
 ---
 
