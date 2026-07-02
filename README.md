@@ -39,8 +39,8 @@ The bot can automatically join Google Meet meetings, record audio, generate AI-p
 * SQLite database integration
 * Meeting status tracking
 * Meeting history storage
-* Worker Manager for scalable meeting execution
-* Worker allocation and release
+* Worker manager for concurrent meeting bots
+* Meeting worker allocation and release
 
 ## Frontend
 
@@ -137,15 +137,16 @@ Implemented:
 
 * Google Meet automation
 * Audio recording
-* Local transcription
-* AI summary generation
+* Local transcription (OpenAI Whisper)
+* Summary generation
 * Email delivery
 * SQLite database
 * Meeting status tracking
-* Transcript & Summary download
+* Meeting history API
+* Transcript & summary storage
+* Worker manager for multi-bot execution
+* Concurrent bot architecture (worker allocation)
 * REST API
-* Worker Manager
-* Worker allocation & release
 
 In Progress:
 
@@ -155,15 +156,14 @@ In Progress:
 
 Planned:
 
-* Meeting Queue
-* Meeting Orchestrator
 * Real-time transcription
 * Speaker diarization
 * Action item extraction
 * Meeting analytics
-* Distributed bot workers
 * Cloud deployment
-* Horizontal scaling
+* Distributed bot workers
+* Dynamic worker scaling
+* Kubernetes/Docker deployment
 
 ---
 
