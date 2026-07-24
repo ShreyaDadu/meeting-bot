@@ -2,7 +2,7 @@
 
 An AI-powered Google Meet assistant built using Playwright, Node.js, React, FFmpeg, SQLite, Nodemailer, and OpenAI Whisper.
 
-The bot can automatically join Google Meet meetings, record audio, generate AI-powered transcripts and summaries, email meeting reports, and is being extended with a worker-based architecture for scalable concurrent meeting automation.
+The bot can automatically join Google Meet meetings, record audio, generate AI-powered transcripts and summaries, email meeting reports, and includes a worker-based architecture that supports concurrent meeting automation and serves as the foundation for future horizontal scaling.
 ---
 
 # Features
@@ -10,7 +10,7 @@ The bot can automatically join Google Meet meetings, record audio, generate AI-p
 ## Meeting Automation
 
 * Join Google Meet meetings automatically
-* Chrome persistent login support
+* Persistent Chrome profile support
 * Auto-disable microphone before joining
 * Auto-disable camera before joining
 * Auto-click Join Now
@@ -40,13 +40,21 @@ The bot can automatically join Google Meet meetings, record audio, generate AI-p
 * Meeting status tracking
 * Meeting history storage
 * Worker manager for concurrent meeting bots
-* Meeting worker allocation and release
+* Meeting queue management
+* Worker allocation and release
+* Individual bot lifecycle management
+* Isolated worker browser profiles
 
 ## Frontend
 
 * React dashboard
-* Start Meeting Bot
-* Stop Meeting Bot
+* Start multiple meeting bots
+* Stop individual meeting bots
+* Meeting history dashboard
+* Transcript viewer
+* Summary viewer
+* Download transcript
+* Download summary
 * User email input
 * Google Meet link input
 
@@ -102,26 +110,28 @@ The project is evolving from a single meeting bot into a scalable worker-based a
 Current implementation includes:
 
 * Worker Manager
+* Meeting queue
 * Worker allocation
 * Worker release after meeting completion
+* Support for multiple concurrent meeting bots
 
 Upcoming scalability features:
 
-* Meeting Queue
 * Meeting Orchestrator
+* Dynamic browser worker pool
 * Multiple isolated browser workers
 * Distributed execution across machines
-* Horizontal scaling for concurrent meetings
+* Horizontal scaling
 
 # Current Workflow
 
 1. User enters Google Meet link
 2. User enters email address
-3. Worker Manager assigns an available worker
+3. Worker Manager assigns an available worker and browser profile
 4. Bot joins meeting automatically
 5. Microphone and camera are disabled
 6. Meeting audio recording starts
-7. User stops meeting from dashboard
+7. User stops an individual meeting bot from the dashboard
 8. FFmpeg recording ends
 9. Whisper generates transcript
 10. Summary is generated
@@ -142,17 +152,16 @@ Implemented:
 * Email delivery
 * SQLite database
 * Meeting status tracking
-* Meeting history API
+* Meeting history dashboard
+* Transcript viewer
+* Summary viewer
+* Transcript & summary download
 * Transcript & summary storage
-* Worker manager for multi-bot execution
-* Concurrent bot architecture (worker allocation)
+* Worker manager
+* Meeting queue
+* Concurrent bot architecture
 * REST API
 
-In Progress:
-
-* Meeting History Dashboard
-* Transcript Viewer
-* Summary Viewer
 
 Planned:
 
@@ -160,10 +169,11 @@ Planned:
 * Speaker diarization
 * Action item extraction
 * Meeting analytics
+* Dynamic browser worker pool
+* Distributed worker nodes
+* Docker deployment
+* Kubernetes orchestration
 * Cloud deployment
-* Distributed bot workers
-* Dynamic worker scaling
-* Kubernetes/Docker deployment
 
 ---
 
