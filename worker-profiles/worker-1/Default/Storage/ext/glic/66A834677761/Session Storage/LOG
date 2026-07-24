@@ -1,3 +1,2 @@
-2026/07/01-23:07:53.999 5584 Reusing MANIFEST D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Storage\ext\glic\66A834677761\Session Storage/MANIFEST-000001
-2026/07/01-23:07:54.006 5584 Recovering log #3
-2026/07/01-23:07:54.028 5584 Reusing old log D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Storage\ext\glic\66A834677761\Session Storage/000003.log 
+2026/07/09-22:41:40.273 63a0 Creating DB D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Storage\ext\glic\66A834677761\Session Storage since it was missing.
+2026/07/09-22:41:40.440 63a0 Reusing MANIFEST D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Storage\ext\glic\66A834677761\Session Storage/MANIFEST-000001

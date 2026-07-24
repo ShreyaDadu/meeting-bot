@@ -5,7 +5,7 @@ function App() {
 
   const [meetingLink, setMeetingLink] = useState('');
   const [email, setEmail] = useState('');
-  const [botId, setBotId] = useState(null);
+ 
   const [meetings, setMeetings] = useState([]);
   const [transcript, setTranscript] = useState('');
   const [summary, setSummary] = useState('');
@@ -30,9 +30,15 @@ function App() {
   useEffect(() => {
 
     loadMeetings();
-
+  
+    const interval = setInterval(() => {
+      loadMeetings();
+    }, 5000);
+  
+    return () => clearInterval(interval);
+  
   }, []);
-
+  
   const startMeeting = async () => {
 
     try {
@@ -45,7 +51,6 @@ function App() {
         }
       );
 
-      setBotId(response.data.botId);
 
       alert(response.data.message);
 
@@ -62,34 +67,32 @@ function App() {
 
   };
 
-  const stopMeeting = async () => {
+  const stopMeeting = async (botId) => {
 
     try {
-
+  
       const response = await axios.post(
         'http://localhost:5000/api/stop-bot',
         {
           botId
         }
       );
-
+  
       alert(response.data.message);
-
+  
       setTimeout(() => {
-
         loadMeetings();
-
       }, 3000);
-
+  
     } catch (error) {
-
+  
       alert(
         error.response?.data?.message ||
         'Failed to stop bot'
       );
-
+  
     }
-
+  
   };
 
   const viewTranscript = async (id) => {
@@ -181,16 +184,7 @@ function App() {
         }}
       >
         Start Meeting Bot
-      </button>
-
-      <button
-        onClick={stopMeeting}
-        style={{
-          padding: '10px 20px'
-        }}
-      >
-        Stop Meeting Bot
-      </button>
+      </button> 
 
       <hr style={{ marginTop: '40px' }} />
 
@@ -270,6 +264,19 @@ function App() {
 >
   Download Summary
 </button>
+
+{meeting.status === 'running' && (
+  <button
+    onClick={() => stopMeeting(meeting.id)}
+    style={{
+      marginLeft: '10px',
+      background: 'red',
+      color: 'white'
+    }}
+  >
+    Stop Bot
+  </button>
+)}
         </div>
 
       ))}

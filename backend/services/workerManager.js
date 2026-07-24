@@ -1,13 +1,17 @@
 const workers = [
-    {
-      id: 'worker-1',
-      busy: false
-    },
-    {
-      id: 'worker-2',
-      busy: false
-    }
-  ];
+  {
+    id: 'worker-1',
+    busy: false
+  },
+  {
+    id: 'worker-2',
+    busy: false
+  },
+  {
+    id: 'worker-3',
+    busy: false
+  }
+];
   
   function getFreeWorker() {
   

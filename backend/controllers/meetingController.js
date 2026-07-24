@@ -2,6 +2,13 @@ const db = require('../database');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const {
+  addMeeting
+} = require('../services/queueManager');
+
+const {
+  assignMeeting
+} = require('../services/orchestrator');
 
 const {
   getFreeWorker,
@@ -28,6 +35,17 @@ const startMeetingBot = async (req, res) => {
 
     const botId = Date.now().toString();
     const meetingId = botId;
+
+    addMeeting({
+      id: meetingId,
+      meetingLink,
+      email
+    });
+    
+    console.log(
+      `Meeting ${meetingId} added to queue`
+    );
+
     const worker = getFreeWorker();
 
     if (!worker) {
@@ -38,7 +56,7 @@ const startMeetingBot = async (req, res) => {
       });
     
     }
-    const workerId = 'worker-2';
+    const workerId = worker.id;
     occupyWorker(worker.id);
     
     console.log(
@@ -68,23 +86,8 @@ db.run(
 
 );
 
-/*const botProcess = spawn(
-  'node',
-  [
-    'bot.js',
-    meetingLink,
-    email,
-    meetingId,
-    worker.id
-  ],
-      {
-        cwd: 'D:/BOT/meeting-bot',
-        shell: true
-      }
-    );*/
-    
-    
 
+  
     const botProcess = spawn(
       'node',
       [
@@ -128,7 +131,7 @@ db.run(
   ]
 
 );
-releaseWorker(workerId);
+releaseWorker(worker.id);
 
 console.log(
   `${workerId} released`

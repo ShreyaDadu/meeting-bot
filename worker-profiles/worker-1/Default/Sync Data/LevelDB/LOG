@@ -1,3 +1,3 @@
-2026/07/01-23:07:18.192 4594 Reusing MANIFEST D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Sync Data\LevelDB/MANIFEST-000001
-2026/07/01-23:07:18.193 4594 Recovering log #3
-2026/07/01-23:07:18.196 4594 Reusing old log D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Sync Data\LevelDB/000003.log 
+2026/07/20-18:25:31.937 266c Reusing MANIFEST D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/07/20-18:25:31.938 266c Recovering log #3
+2026/07/20-18:25:31.940 266c Reusing old log D:\BOT\meeting-bot\worker-profiles\worker-1\Default\Sync Data\LevelDB/000003.log 

@@ -41,38 +41,23 @@ const userEmail = process.argv[3];
     }
 
     console.log('Opening Chrome...');
-   
 
-   /* context = await chromium.launchPersistentContext(
-      'D:/BOT/meeting-bot/playwright-profile',
-      {
-        headless: false,
-        channel: 'chrome',
-        args: [
-          '--use-fake-ui-for-media-stream',
-          '--start-maximized'
-        ]
-      }
-    );*/
-
-    console.log('Worker:', workerId);
-
-/* const profilePath = path.join(
-  __dirname,
-  'worker-profiles',
-  workerId
-);
-
-console.log('Profile Path:', profilePath);
+    const profilePath = path.join(
+      __dirname,
+      'worker-profiles',
+      workerId
+    );
     
     fs.mkdirSync(profilePath, {
       recursive: true
-    });*/
-    const profilePath =
-  'D:/BOT/meeting-bot/playwright-profile';
+    });
+    
+    console.log('Worker:', workerId);
+    console.log('Profile:', profilePath);
 
 console.log('Worker:', workerId);
 console.log('Profile:', profilePath);
+console.log("PID:", process.pid);
     
     context = await chromium.launchPersistentContext(
       profilePath,
