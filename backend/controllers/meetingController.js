@@ -89,19 +89,19 @@ db.run(
 
   
     const botProcess = spawn(
-      'node',
-      [
-        'bot.js',
-        meetingLink,
-        email,
-        botId,
-        workerId   
-      ],
-      {
-        cwd: 'D:/BOT/meeting-bot',
-        shell: true
-      }
-    );
+  'node',
+  [
+    'bot.js',
+    meetingLink,
+    email,
+    botId,
+    workerId
+  ],
+  {
+    cwd: path.join(__dirname, '..', '..'),
+    shell: true
+  }
+);
     
     activeBots[botId] = botProcess;
 

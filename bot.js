@@ -3,10 +3,11 @@ const path = require('path');
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const db = require('./backend/database');
+let context = null;
 (async () => {
 
   let recording = null;
-  let context = null;
+  
 
   try {
 
@@ -185,7 +186,7 @@ await page.waitForTimeout(20000);
     console.log('Starting recording...');
 
     recording = spawn(
-      'D:/BOT/ffmpeg-8.1.1-essentials_build/bin/ffmpeg.exe',
+      'D:/BOT - Copy/ffmpeg-8.1.1-essentials_build/bin/ffmpeg.exe',
       [
         '-y',
         '-f',
@@ -193,7 +194,7 @@ await page.waitForTimeout(20000);
         '-rtbufsize',
         '100M',
         '-i',
-        'audio=Stereo Mix (Realtek(R) Audio)',
+        'audio=Stereo Mix (2- Realtek(R) Audio)',
         '-ac',
         '2',
         '-ar',
@@ -266,7 +267,13 @@ const interval = setInterval(async () => {
     // =========================
     // AFTER RECORDING CLOSES
     // =========================
+setTimeout(() => {
+  console.log('60 seconds completed. Stopping recording...');
 
+  if (recording) {
+    recording.stdin.write('q\n');
+  }
+}, 60000);
     recording.on('close', () => {
       clearInterval(interval);
       console.log('Recording completed');
