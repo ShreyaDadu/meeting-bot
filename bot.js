@@ -3,6 +3,22 @@ const path = require('path');
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const db = require('./backend/database');
+const qualcommConfig = require('./qualcomm/config');
+const { getQualcommStatus } = require('./qualcomm/transcription');
+
+console.log("MeetMind AI Acceleration");
+console.log("Qualcomm target:", qualcommConfig.target);
+console.log("Qualcomm model available:", qualcommConfig.modelsAvailable);
+console.log("Qualcomm runtime selected:", qualcommConfig.useQualcomm);
+const qualcommStatus = getQualcommStatus();
+console.log("Qualcomm execution ready:", qualcommStatus.readyForQualcomm);
+console.log("Local fallback:", qualcommConfig.fallback);
+
+if (qualcommConfig.useQualcomm) {
+  console.log("Inference backend: Qualcomm AI Hub / QNN");
+} else {
+  console.log("Inference backend: Whisper CPU");
+}
 let context = null;
 (async () => {
 

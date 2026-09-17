@@ -18,14 +18,15 @@ print(f"Operating System: {system}")
 print(f"Architecture: {machine}")
 
 # Snapdragon / ARM detection
+# Architecture information
 is_arm = machine.lower() in ["arm64", "aarch64"]
 
 if is_arm:
-    print("Snapdragon/ARM system detected.")
-    print("Qualcomm-optimized inference will be used when available.")
+    print("ARM64 / Snapdragon system detected.")
+    print("Backend selection will be handled by the transcription provider.")
 else:
-    print("Standard x64 system detected.")
-    print("Using Whisper CPU fallback.")
+    print("x64 system detected.")
+    print("Backend selection will be handled by the transcription provider.")
 
 print("Loading Whisper model...")
 

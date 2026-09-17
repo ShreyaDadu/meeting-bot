@@ -44,3 +44,6 @@ scripts/local-summary.py
 scripts/free-summary-backup.js
 # Experimental / Qualcomm integration
 scripts/transcription_provider.py
+
+qualcomm_models/
+whisper_base-precompiled_qnn_onnx-float-qualcomm_snapdragon_x2_elite/
