@@ -77,13 +77,37 @@ The final information is displayed through the MeetMind dashboard and can also b
 
 Qualcomm Snapdragon Readiness
 
-MeetMind AI is being developed with Snapdragon-powered Windows PCs as the intended optimized deployment target.
+MeetMind AI is designed with Snapdragon-powered Windows PCs as the intended optimized deployment target.
 
-The current development environment uses an x64 Intel laptop, so the project uses a CPU-based Whisper fallback during development and testing.
+During development, the application was tested on an x64 Intel Windows laptop, so the local development environment uses a CPU-based Whisper fallback. The Qualcomm deployment path is kept separate from the rest of the meeting pipeline so the transcription backend can be optimized for Snapdragon hardware without redesigning the complete application.
 
-The architecture separates the transcription layer from the rest of the meeting pipeline so that the transcription backend can be optimized for Snapdragon hardware without redesigning the complete application.
+Qualcomm AI Hub Model Integration
 
+The project uses Qualcomm AI Hub to prepare an optimized Whisper-Base speech recognition deployment for Snapdragon platforms.
+
+The Whisper-Base model was fetched through the Qualcomm AI Hub Models workflow and optimized for the Snapdragon X2 Elite target device. Qualcomm AI Hub generated optimized ONNX/QNN artifacts for the encoder and decoder, which are maintained locally as deployment assets and excluded from the Git repository because of their size.
+
+Deployment architecture:
+
+Meeting Audio
+     ↓
+Whisper-Base
+     ↓
 Qualcomm AI Hub
+     ↓
+Optimized QNN / ONNX Artifacts
+     ↓
+Snapdragon X2 Elite
+     ↓
+Qualcomm-Accelerated Transcription
+     ↓
+MeetMind AI Pipeline
+
+The application detects the host architecture and checks for the required Qualcomm model artifacts. On non-Snapdragon x64 development systems, MeetMind AI automatically uses the reliable Whisper CPU fallback.
+
+The Snapdragon execution path is intended for compatible Windows ARM64 / Snapdragon hardware. Actual Snapdragon runtime execution and hardware benchmarking are not claimed for the current Intel development machine and remain part of hardware validation.
+
+This architecture allows the same meeting workflow, transcript generation, meeting intelligence extraction, dashboard and email functionality to remain unchanged while the speech-recognition backend can be accelerated on supported Snapdragon devices.Qualcomm AI Hub
 
 The project is designed around a model-deployment path compatible with the Qualcomm AI Hub workflow:
 
