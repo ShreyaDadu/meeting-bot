@@ -283,13 +283,18 @@ const interval = setInterval(async () => {
     // =========================
     // AFTER RECORDING CLOSES
     // =========================
+const recordingDuration = Number(process.env.RECORDING_DURATION || 60);
+
 setTimeout(() => {
-  console.log('60 seconds completed. Stopping recording...');
+  console.log(
+    `${recordingDuration} seconds completed. Stopping recording...`
+  );
 
   if (recording) {
     recording.stdin.write('q\n');
   }
-}, 60000);
+}, recordingDuration * 1000);
+
     recording.on('close', () => {
       clearInterval(interval);
       console.log('Recording completed');
