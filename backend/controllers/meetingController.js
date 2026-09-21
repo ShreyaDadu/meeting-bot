@@ -2,13 +2,10 @@ const db = require('../database');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
 const {
   addMeeting
 } = require('../services/queueManager');
-
-const {
-  assignMeeting
-} = require('../services/orchestrator');
 
 const {
   getFreeWorker,
@@ -22,7 +19,11 @@ const startMeetingBot = async (req, res) => {
 
   try {
 
-    const { meetingLink, email } = req.body;
+    const {
+      meetingLink,
+      email,
+      recordingDuration
+    } = req.body;
 
     if (!meetingLink) {
 
@@ -36,12 +37,15 @@ const startMeetingBot = async (req, res) => {
     const botId = Date.now().toString();
     const meetingId = botId;
 
+    // Default recording duration: 60 seconds
+    const duration = Number(recordingDuration) || 60;
+
     addMeeting({
       id: meetingId,
       meetingLink,
       email
     });
-    
+
     console.log(
       `Meeting ${meetingId} added to queue`
     );
@@ -49,60 +53,68 @@ const startMeetingBot = async (req, res) => {
     const worker = getFreeWorker();
 
     if (!worker) {
-    
+
       return res.status(503).json({
         success: false,
         message: 'No meeting workers available'
       });
-    
+
     }
+
     const workerId = worker.id;
+
     occupyWorker(worker.id);
-    
+
     console.log(
       `Assigned ${worker.id} to meeting ${meetingId}`
     );
 
-db.run(
+    db.run(
 
-  `
-    INSERT INTO meetings (
-      id,
-      email,
-      meetingLink,
-      status,
-      createdAt
-    )
-    VALUES (?, ?, ?, ?, ?)
-  `,
+      `
+      INSERT INTO meetings (
+        id,
+        email,
+        meetingLink,
+        status,
+        createdAt
+      )
+      VALUES (?, ?, ?, ?, ?)
+      `,
 
-  [
-    botId,
-    email,
-    meetingLink,
-    'running',
-    new Date().toISOString()
-  ]
+      [
+        botId,
+        email,
+        meetingLink,
+        'running',
+        new Date().toISOString()
+      ]
 
-);
+    );
 
+    console.log(
+      `Recording duration: ${duration} seconds`
+    );
 
-  
     const botProcess = spawn(
-  'node',
-  [
-    'bot.js',
-    meetingLink,
-    email,
-    botId,
-    workerId
-  ],
-  {
-    cwd: path.join(__dirname, '..', '..'),
-    shell: true
-  }
-);
-    
+      'node',
+      [
+        'bot.js',
+        meetingLink,
+        email,
+        botId,
+        workerId
+      ],
+      {
+        cwd: path.join(__dirname, '..', '..'),
+        shell: true,
+        env: {
+          ...process.env,
+          RECORDING_DURATION: String(duration)
+        }
+      }
+    );
+
     activeBots[botId] = botProcess;
 
     botProcess.stdout.on('data', data => {
@@ -115,35 +127,43 @@ db.run(
 
     botProcess.on('close', () => {
 
-      console.log(`Bot ${botId} closed`);
-    
-db.run(
+      console.log(
+        `Bot ${botId} closed`
+      );
 
-  `
-    UPDATE meetings
-    SET status = ?
-    WHERE id = ?
-  `,
+      db.run(
 
-  [
-    'completed',
-    botId
-  ]
+        `
+        UPDATE meetings
+        SET status = ?
+        WHERE id = ?
+        `,
 
-);
-releaseWorker(worker.id);
+        [
+          'completed',
+          botId
+        ]
 
-console.log(
-  `${workerId} released`
-);
+      );
+
+      releaseWorker(worker.id);
+
+      console.log(
+        `${workerId} released`
+      );
+
       delete activeBots[botId];
 
     });
 
     return res.json({
+
       success: true,
+
       message: 'Bot started successfully',
+
       botId
+
     });
 
   } catch (error) {
@@ -151,13 +171,17 @@ console.log(
     console.log(error);
 
     return res.status(500).json({
+
       success: false,
+
       message: 'Failed to start bot'
+
     });
 
   }
 
 };
+
 
 const stopMeetingBot = async (req, res) => {
 
@@ -168,19 +192,29 @@ const stopMeetingBot = async (req, res) => {
     if (!botId || !activeBots[botId]) {
 
       return res.status(400).json({
+
         success: false,
+
         message: 'Bot not found'
+
       });
 
     }
 
-    console.log(`Stopping bot ${botId}...`);
+    console.log(
+      `Stopping bot ${botId}...`
+    );
 
-    activeBots[botId].stdin.write('STOP\n');
+    activeBots[botId].stdin.write(
+      'STOP\n'
+    );
 
     return res.json({
+
       success: true,
+
       message: 'Bot stopping...'
+
     });
 
   } catch (error) {
@@ -188,30 +222,40 @@ const stopMeetingBot = async (req, res) => {
     console.log(error);
 
     return res.status(500).json({
+
       success: false,
+
       message: 'Failed to stop bot'
+
     });
 
   }
 
 };
 
+
 const getMeetings = async (req, res) => {
 
   db.all(
+
     `
     SELECT *
     FROM meetings
     ORDER BY createdAt DESC
     `,
+
     [],
+
     (err, rows) => {
 
       if (err) {
 
         return res.status(500).json({
+
           success: false,
+
           message: 'Failed to fetch meetings'
+
         });
 
       }
@@ -219,9 +263,11 @@ const getMeetings = async (req, res) => {
       return res.json(rows);
 
     }
+
   );
 
 };
+
 
 const getTranscript = async (req, res) => {
 
@@ -241,8 +287,11 @@ const getTranscript = async (req, res) => {
     if (!fs.existsSync(transcriptPath)) {
 
       return res.status(404).json({
+
         success: false,
+
         message: 'Transcript not found'
+
       });
 
     }
@@ -261,13 +310,17 @@ const getTranscript = async (req, res) => {
     console.log(error);
 
     return res.status(500).json({
+
       success: false,
+
       message: 'Failed to load transcript'
+
     });
 
   }
 
 };
+
 
 const getSummary = async (req, res) => {
 
@@ -287,8 +340,11 @@ const getSummary = async (req, res) => {
     if (!fs.existsSync(summaryPath)) {
 
       return res.status(404).json({
+
         success: false,
+
         message: 'Summary not found'
+
       });
 
     }
@@ -307,18 +363,28 @@ const getSummary = async (req, res) => {
     console.log(error);
 
     return res.status(500).json({
+
       success: false,
+
       message: 'Failed to load summary'
+
     });
 
   }
 
 };
 
+
 module.exports = {
+
   startMeetingBot,
+
   stopMeetingBot,
+
   getMeetings,
+
   getTranscript,
+
   getSummary
+
 };
